@@ -1,6 +1,7 @@
 {% set common_flags = "-DCMAKE_BUILD_TYPE=Release -DVTKm_ENABLE_EXAMPLES=ON -DVTKm_INSTALL_EXAMPLES=OFF" %}
+{% set common_flags = "-DCMAKE_BUILD_TYPE=Release -DVTKm_ENABLE_EXAMPLES=ON -DVTKm_INSTALL_EXAMPLES=OFF" %}
 {% set name = "vtk-m" %}
-{% set version = "2.1.0" %}
+{% set version = "2.2.0" %}
 {% set soversion = version.split('.')[0] + "." + version.split('.')[1] %}
 {% set common_flags = "-DCMAKE_BUILD_TYPE=Release -DVTKm_ENABLE_EXAMPLES=ON -DVTKm_INSTALL_EXAMPLES=OFF" %}
 {% set vtkm_modules = [
@@ -34,7 +35,7 @@ package:
 
 source:
   url: https://gitlab.kitware.com/vtk/vtk-m/-/archive/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
-  sha256: 9cf3522b6dc0675281a1a16839464ebd1cc5f9c08c20eabee1719b3bcfdcf41f
+  sha256: ee66b6bbd33f6ad6f2350e11a7c9328492e53935ba8f66b4b1d01f074eb96341
 
 build:
   script:
@@ -52,6 +53,7 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
     - ninja
     - pkg-config
