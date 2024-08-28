@@ -46,7 +46,7 @@ build:
     - VTKm_DIR=$PREFIX cmake -GNinja -S $SRC_DIR/examples/smoke_test/ -B smoke_test_build  # [unix]
     - cmake --build smoke_test_build  # [unix]
     - ./smoke_test_build/smoke_test  # [unix]
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin='x.x') }}
 
