@@ -40,13 +40,13 @@ source:
 build:
   script:
     - cmake -GNinja -S $SRC_DIR  -B build -DCMAKE_INSTALL_PREFIX=$PREFIX {{ common_flags }}  # [unix]
-    - cmake -GNinja -S %SRC_DIR% -B build -DCMAKE_INSTALL_PREFIX=%PREFIX% {{ common_flags }}  # [win]
+    - cmake -GNinja -S %SRC_DIR% -B build -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% {{ common_flags }}  # [win]
     - cmake --build build -j
     - cmake --install build
     - VTKm_DIR=$PREFIX cmake -GNinja -S $SRC_DIR/examples/smoke_test/ -B smoke_test_build  # [unix]
     - cmake --build smoke_test_build  # [unix]
     - ./smoke_test_build/smoke_test  # [unix]
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin='x.x') }}
 
@@ -65,8 +65,10 @@ test:
     {% for module in vtkm_modules %}
     - test -f $PREFIX/lib/libvtkm_{{ module }}-{{ soversion }}.so.{{ version }}  # [linux]
     - test -f $PREFIX/lib/libvtkm_{{ module }}-{{ soversion }}.{{ version }}.dylib  # [osx]
-    - if not exist %PREFIX%\bin\vtkm_{{ module }}-{{ soversion }}.dll exit 1  # [win]
+    - if not exist %LIBRARY_PREFIX%\bin\vtkm_{{ module }}-{{ soversion }}.dll exit 1  # [win]
+    - if not exist %LIBRARY_PREFIX%\lib\vtkm_{{ module }}-{{ soversion }}.lib exit 1  # [win]
     {% endfor %}
+    - if not exist %LIBRARY_PREFIX%\include\vtkm-{{ soversion }} exit 1  # [win]
 
 about:
   home: https://m.vtk.org/
