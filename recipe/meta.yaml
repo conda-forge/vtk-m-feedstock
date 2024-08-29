@@ -59,8 +59,6 @@ requirements:
     - pkg-config
     - gnuconfig
     - cmake =3.23
-  host:
-  run:
 
 test:
   commands:
