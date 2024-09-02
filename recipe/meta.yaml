@@ -6,7 +6,11 @@
 {% set soversion = version.split('.')[0] + "." + version.split('.')[1] %}
 {% set platform_dependent_flags = "" %}
 {% set platform_dependent_flags = " -DVTKm_ENABLE_OPENMP=ON" %}  # [unix]
-{% set common_flags = "-DCMAKE_BUILD_TYPE=Release -DVTKm_ENABLE_HDF5_IO=ON -DVTKm_ENABLE_EXAMPLES=ON -DVTKm_INSTALL_EXAMPLES=OFF" + platform_dependent_flags %}
+{% set enable_cuda = "-DVTKm_ENABLE_CUDA=OFF" %}
+{% if cuda_compiler_version != "None" %}
+  {% set enable_cuda = "-DCMAKE_CUDA_SEPARABLE_COMPILATION=ON -DVTKm_ENABLE_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES='70-real;86-virtual'" %}
+{% endif %}
+{% set common_flags = "-DCMAKE_BUILD_TYPE=Release -DVTKm_ENABLE_EXAMPLES=OFF -DVTKm_INSTALL_EXAMPLES=OFF" + " " + enable_cuda + " " + platform_dependent_flags %}
 {% set vtkm_modules = [
        'cont',
        'filter_clean_grid',
@@ -42,10 +46,15 @@ source:
 
 build:
   number: {{ build }}
+  skip: true  # [cuda_compiler_version != "None" and not linux64]
+  skip: true  # [cuda_compiler_version == "12.6"]
+  string: "cuda{{ cuda_compiler_version | replace('.', '') }}_h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}"  # [cuda_compiler_version != "None"]
+  string: "cpu_h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}"  # [cuda_compiler_version == "None"]
   script:
-    - cmake -GNinja -S $SRC_DIR  -B build -DCMAKE_INSTALL_PREFIX=$PREFIX {{ common_flags }}  # [unix]
-    - cmake -GNinja -S %SRC_DIR% -B build -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% {{ common_flags }}  # [win]
-    - cmake --build build -j
+    - cmake -GNinja -S $SRC_DIR  -B build $CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=$PREFIX {{ common_flags }}  # [unix]
+    - cmake -GNinja -S %SRC_DIR% -B build %CMAKE_ARGS% -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% {{ common_flags }}  # [win]
+    - cmake --build build -j$CPU_COUNT  # [unix]
+    - cmake --build build -j%CPU_COUNT%  # [win]
     - cmake --install build
     - VTKm_DIR=$PREFIX cmake -GNinja -S $SRC_DIR/examples/smoke_test/ -B smoke_test_build  # [unix]
     - cmake --build smoke_test_build  # [unix]
@@ -58,6 +67,7 @@ requirements:
     - {{ compiler('c') }}
     - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
+    - {{ compiler('cuda') }}  # [cuda_compiler_version != "None"]
     - cmake >=3.23
     - gnuconfig
     - libgomp      # [linux]
