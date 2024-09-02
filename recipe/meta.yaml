@@ -59,6 +59,9 @@ requirements:
     - pkg-config
     - gnuconfig
     - cmake =3.23
+    - cudatoolkit  # [linux or win]
+  run:
+    - cuda-runtime  # [linux or win]
 
 test:
   commands:
