@@ -3,7 +3,7 @@
 {% set soversion = version.split('.')[0] + "." + version.split('.')[1] %}
 {% set enable_cuda = "-DVTKm_ENABLE_CUDA=OFF" %}
 {% if cuda_compiler_version != "None" %}
-  {% set enable_cuda = "-DCMAKE_CUDA_SEPARABLE_COMPILATION=ON -DVTKm_ENABLE_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES='70-real;86-virtual'" %}
+  {% set enable_cuda = "-DCMAKE_CUDA_SEPARABLE_COMPILATION=ON -DVTKm_ENABLE_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=70" %}
 {% endif %}
 {% set common_flags = "-DCMAKE_BUILD_TYPE=Release -DVTKm_ENABLE_EXAMPLES=ON -DVTKm_INSTALL_EXAMPLES=OFF" + " " + enable_cuda %}
 {% set vtkm_modules = [
