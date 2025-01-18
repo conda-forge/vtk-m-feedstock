@@ -1,9 +1,11 @@
-{% set common_flags = "-DCMAKE_BUILD_TYPE=Release -DVTKm_ENABLE_EXAMPLES=ON -DVTKm_INSTALL_EXAMPLES=OFF" %}
-{% set common_flags = "-DCMAKE_BUILD_TYPE=Release -DVTKm_ENABLE_EXAMPLES=ON -DVTKm_INSTALL_EXAMPLES=OFF" %}
 {% set name = "vtk-m" %}
 {% set version = "2.2.0" %}
 {% set soversion = version.split('.')[0] + "." + version.split('.')[1] %}
-{% set common_flags = "-DCMAKE_BUILD_TYPE=Release -DVTKm_ENABLE_EXAMPLES=ON -DVTKm_INSTALL_EXAMPLES=OFF" %}
+{% set enable_cuda = "-DVTKm_ENABLE_CUDA=OFF" %}
+{% if cuda_compiler_version != "None" %}
+  {% set enable_cuda = "-DCMAKE_CUDA_SEPARABLE_COMPILATION=ON -DVTKm_ENABLE_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES='70-real;86-virtual'" %}
+{% endif %}
+{% set common_flags = "-DCMAKE_BUILD_TYPE=Release -DVTKm_ENABLE_EXAMPLES=ON -DVTKm_INSTALL_EXAMPLES=OFF" + " " + enable_cuda %}
 {% set vtkm_modules = [
        'cont',
        'filter_clean_grid',
@@ -38,9 +40,13 @@ source:
   sha256: ee66b6bbd33f6ad6f2350e11a7c9328492e53935ba8f66b4b1d01f074eb96341
 
 build:
+  skip: true  # [cuda_compiler_version != "None" and not linux64]
+  skip: true  # [cuda_compiler_version == "12.6"]
+  string: "cuda{{ cuda_compiler_version | replace('.', '') }}_h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}"  # [cuda_compiler_version != "None"]
+  string: "cpu_h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}"  # [cuda_compiler_version == "None"]
   script:
-    - cmake -GNinja -S $SRC_DIR  -B build -DCMAKE_INSTALL_PREFIX=$PREFIX {{ common_flags }}  # [unix]
-    - cmake -GNinja -S %SRC_DIR% -B build -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% {{ common_flags }}  # [win]
+    - cmake -GNinja -S $SRC_DIR  -B build $CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=$PREFIX {{ common_flags }}  # [unix]
+    - cmake -GNinja -S %SRC_DIR% -B build %CMAKE_ARGS% -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% {{ common_flags }}  # [win]
     - cmake --build build -j
     - cmake --install build
     - VTKm_DIR=$PREFIX cmake -GNinja -S $SRC_DIR/examples/smoke_test/ -B smoke_test_build  # [unix]
@@ -55,10 +61,11 @@ requirements:
     - {{ compiler('c') }}
     - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
+    - {{ compiler('cuda') }}  # [cuda_compiler_version != "None"]
     - ninja
     - pkg-config
     - gnuconfig
-    - cmake =3.23
+    - cmake >=3.23
 
 test:
   commands:
