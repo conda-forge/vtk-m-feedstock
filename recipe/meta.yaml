@@ -1,9 +1,11 @@
-{% set common_flags = "-DCMAKE_BUILD_TYPE=Release -DVTKm_ENABLE_EXAMPLES=ON -DVTKm_INSTALL_EXAMPLES=OFF" %}
-{% set common_flags = "-DCMAKE_BUILD_TYPE=Release -DVTKm_ENABLE_EXAMPLES=ON -DVTKm_INSTALL_EXAMPLES=OFF" %}
 {% set name = "vtk-m" %}
 {% set version = "2.2.0" %}
+{% set build = "2" %}
+{% set sha256 = "ee66b6bbd33f6ad6f2350e11a7c9328492e53935ba8f66b4b1d01f074eb96341" %}
 {% set soversion = version.split('.')[0] + "." + version.split('.')[1] %}
-{% set common_flags = "-DCMAKE_BUILD_TYPE=Release -DVTKm_ENABLE_EXAMPLES=ON -DVTKm_INSTALL_EXAMPLES=OFF" %}
+{% set platform_dependent_flags = "" %}
+{% set platform_dependent_flags = " -DVTKm_ENABLE_OPENMP=ON" %}  # [unix]
+{% set common_flags = "-DCMAKE_BUILD_TYPE=Release -DVTKm_ENABLE_HDF5_IO=ON -DVTKm_ENABLE_EXAMPLES=ON -DVTKm_INSTALL_EXAMPLES=OFF" + platform_dependent_flags %}
 {% set vtkm_modules = [
        'cont',
        'filter_clean_grid',
@@ -35,9 +37,10 @@ package:
 
 source:
   url: https://gitlab.kitware.com/vtk/vtk-m/-/archive/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
-  sha256: ee66b6bbd33f6ad6f2350e11a7c9328492e53935ba8f66b4b1d01f074eb96341
+  sha256: {{ sha256 }}
 
 build:
+  number: {{ build }}
   script:
     - cmake -GNinja -S $SRC_DIR  -B build -DCMAKE_INSTALL_PREFIX=$PREFIX {{ common_flags }}  # [unix]
     - cmake -GNinja -S %SRC_DIR% -B build -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% {{ common_flags }}  # [win]
@@ -46,7 +49,6 @@ build:
     - VTKm_DIR=$PREFIX cmake -GNinja -S $SRC_DIR/examples/smoke_test/ -B smoke_test_build  # [unix]
     - cmake --build smoke_test_build  # [unix]
     - ./smoke_test_build/smoke_test  # [unix]
-  number: 1
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin='x.x') }}
 
@@ -55,10 +57,14 @@ requirements:
     - {{ compiler('c') }}
     - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
+    - cmake >=3.23
+    - gnuconfig
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
     - ninja
     - pkg-config
-    - gnuconfig
-    - cmake =3.23
+  host:
+    - hdf5
 
 test:
   commands:
