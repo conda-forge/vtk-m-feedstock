@@ -6,3 +6,10 @@ conda_build:
 conda_forge_output_validation: true
 bot:
   automerge: true
+github_actions:
+  self_hosted: true
+  triggers:
+  - push
+  - pull_request
+provider:
+  linux_64: github_actions
