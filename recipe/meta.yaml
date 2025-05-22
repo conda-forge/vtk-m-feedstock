@@ -1,16 +1,5 @@
-{% set platform_dependent_flags = " -DVTKm_ENABLE_OPENMP=ON" %}  # [unix]
-{% set name = "vtk-m" %}
 {% set version = "2.3.0" %}
-{% set build = 1 %}
-{% set sha256 = "63f1a0273227463a1be38c046630ea6f606ed958543fe6ff64eb6bb6513a6013" %}
 {% set soversion = version.split('.')[0] + "." + version.split('.')[1] %}
-{% set platform_dependent_flags = "" %}
-{% set platform_dependent_flags = " -DVTKm_ENABLE_OPENMP=ON" %}  # [unix]
-{% set enable_cuda = "-DVTKm_ENABLE_CUDA=OFF" %}
-{% if cuda_compiler_version != "None" %}
-  {% set enable_cuda = "-DCMAKE_CUDA_SEPARABLE_COMPILATION=ON -DVTKm_ENABLE_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES='70-real;86-virtual'" %}
-{% endif %}
-{% set common_flags = "-DCMAKE_BUILD_TYPE=Release -DVTKm_ENABLE_EXAMPLES=OFF -DVTKm_INSTALL_EXAMPLES=OFF" + " " + enable_cuda + " " + platform_dependent_flags %}
 {% set vtkm_modules = [
        'cont',
        'filter_clean_grid',
@@ -37,16 +26,14 @@
 ] %}
 
 package:
-  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://gitlab.kitware.com/vtk/vtk-m/-/archive/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  url: https://gitlab.kitware.com/vtk/vtk-m/-/archive/v{{ version }}/vtk-m-v{{ version }}.tar.gz
+  sha256: 63f1a0273227463a1be38c046630ea6f606ed958543fe6ff64eb6bb6513a6013
 
 build:
-  number: {{ build }}
-  skip: true  # [cuda_compiler_version != "None" and not linux64]
+  number: 2
   skip: true  # [cuda_compiler_version == "12.6"]
   string: "cuda{{ cuda_compiler_version | replace('.', '') }}_h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}"  # [cuda_compiler_version != "None"]
   string: "cpu_h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}"  # [cuda_compiler_version == "None"]
