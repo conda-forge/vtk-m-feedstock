@@ -1,0 +1,70 @@
+context:
+  version: 2.3.0
+
+package:
+  name: vtk-m
+  version: ${{ version }}
+
+source:
+  url: https://gitlab.kitware.com/vtk/vtk-m/-/archive/v${{ version }}/vtk-m-v${{ version }}.tar.gz
+  sha256: 63f1a0273227463a1be38c046630ea6f606ed958543fe6ff64eb6bb6513a6013
+
+build:
+  number: 2
+  skip: "cuda_compiler_version == '12.6'"
+
+requirements:
+  build:
+    - ${{ compiler('c') }}
+    - ${{ stdlib("c") }}
+    - ${{ compiler('cxx') }}
+    - if: "cuda_compiler_version != 'None'"
+      then: ${{ compiler('cuda') }}
+    - cmake >=3.23
+    - gnuconfig
+    - ninja
+    - pkg-config
+    - if: linux
+      then: libgomp
+    - if: osx
+      then: llvm-openmp
+  host:
+    - hdf5
+    - if: osx
+      then: llvm-openmp
+  run:
+    - if: osx
+      then: llvm-openmp
+  run_exports:
+    - ${{ pin_subpackage('vtk-m', upper_bound='x.x') }}
+
+tests:
+  - script:
+      - if: unix
+        then: run_test.sh
+      - if: win
+        then: run_test.bat
+
+about:
+  summary: Visualization ToolKit for Many-cores (vtk-m)
+  description: |
+    VTK-m is a toolkit of scientific visualization algorithms for emerging
+    processor architectures. VTK-m supports the fine-grained concurrency for
+    data analysis and visualization algorithms required to drive extreme scale
+    computing by providing abstract models for data and execution that can be
+    applied to a variety of algorithms across many different processor
+    architectures.
+  license: BSD-3-Clause
+  license_file:
+    - LICENSE.txt
+    - vtkm/thirdparty/diy/vtkmdiy/LICENSE.txt
+    - vtkm/thirdparty/lcl/vtkmlcl/LICENSE.md
+    - vtkm/thirdparty/lodepng/vtkmlodepng/LICENSE
+  homepage: https://m.vtk.org/
+  repository: https://gitlab.kitware.com/vtk/vtk-m
+  documentation: https://docs-m.vtk.org/latest/
+
+extra:
+  recipe-maintainers:
+    - danielnachun
+    - vicentebolea
