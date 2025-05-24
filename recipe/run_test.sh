@@ -2,12 +2,15 @@
 
 set -o xtrace -o nounset -o pipefail -o errexit
 
-soversion=
+export pkg_version_array=(${PKG_VERSION//./ })
+export so_version="${pkg_version_array[0]}.${pkg_version_array[1]}"
 
 check_lib() {
     lib_name=$1
-    test -f ${PREFIX}/
+    test -f ${PREFIX}/lib/libvtkm_${lib_name}-${so_version}${SHLIB_EXT}
 }
+
+export -f check_lib
 
 vtkm_modules=(
     cont
@@ -33,3 +36,5 @@ vtkm_modules=(
     source
     worklet
 )
+
+echo ${vtkm_modules[@]} | tr ' ' '\n' | xargs -I % bash -c "check_lib %"
