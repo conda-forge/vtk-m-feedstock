@@ -1,0 +1,138 @@
+context:
+  version: 2.3.0
+  soversion: 2.3
+
+package:
+  name: vtk-m
+  version: ${{ version }}
+
+source:
+  url: https://gitlab.kitware.com/vtk/vtk-m/-/archive/v${{ version }}/vtk-m-v${{ version }}.tar.gz
+  sha256: 63f1a0273227463a1be38c046630ea6f606ed958543fe6ff64eb6bb6513a6013
+
+build:
+  number: 2
+  skip: "cuda_compiler_version == '12.6'"
+
+requirements:
+  build:
+    - ${{ compiler('c') }}
+    - ${{ stdlib("c") }}
+    - ${{ compiler('cxx') }}
+    - if: "cuda_compiler_version != 'None'"
+      then: ${{ compiler('cuda') }}
+    - cmake >=3.23
+    - gnuconfig
+    - ninja
+    - pkg-config
+    - if: linux
+      then: libgomp
+    - if: osx
+      then: llvm-openmp
+  host:
+    - hdf5
+    - if: osx
+      then: llvm-openmp
+  run:
+    - if: osx
+      then: llvm-openmp
+  run_exports:
+    - ${{ pin_subpackage('vtk-m', upper_bound='x.x') }}
+
+tests:
+  - script:
+      - if: unix
+        then: |
+          test -f ${PREFIX}/lib/libvtkm_cont-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_filter_clean_grid-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_filter_connected_components-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_filter_contour-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_filter_core-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_filter_density_estimate-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_filter_entity_extraction-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_filter_field_conversion-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_filter_field_transform-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_filter_flow-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_filter_geometry_refinement-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_filter_image_processing-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_filter_mesh_info-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_filter_multi_block-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_filter_resampling-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_filter_scalar_topology-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_filter_vector_analysis-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_filter_zfp-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_io-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_rendering-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_source-${{ soversion }}${SHLIB_EXT}
+          test -f ${PREFIX}/lib/libvtkm_worklet-${{ soversion }}${SHLIB_EXT}
+      - if: win
+        then: |
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_cont.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_filter_clean_grid.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_filter_connected_components.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_filter_contour.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_filter_core.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_filter_density_estimate.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_filter_entity_extraction.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_filter_field_conversion.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_filter_field_transform.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_filter_flow.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_filter_geometry_refinement.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_filter_image_processing.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_filter_mesh_info.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_filter_multi_block.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_filter_resampling.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_filter_scalar_topology.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_filter_vector_analysis.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_filter_zfp.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_io.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_rendering.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_source.dll exit 1
+          if not exist %LIBRARY_PREFIX%\bin\libvtkm_worklet.dll exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_cont.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_filter_clean_grid.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_filter_connected_components.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_filter_contour.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_filter_core.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_filter_density_estimate.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_filter_entity_extraction.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_filter_field_conversion.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_filter_field_transform.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_filter_flow.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_filter_geometry_refinement.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_filter_image_processing.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_filter_mesh_info.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_filter_multi_block.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_filter_resampling.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_filter_scalar_topology.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_filter_vector_analysis.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_filter_zfp.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_io.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_rendering.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_source.lib exit 1
+          if not exist %LIBRARY_PREFIX%\lib\libvtkm_worklet.lib exit 1
+          if not exist %LIBRARY_PREFIX%\include\vtkm-${{ soversion }} exit 1
+
+about:
+  summary: Visualization ToolKit for Many-cores (vtk-m)
+  description: |
+    VTK-m is a toolkit of scientific visualization algorithms for emerging
+    processor architectures. VTK-m supports the fine-grained concurrency for
+    data analysis and visualization algorithms required to drive extreme scale
+    computing by providing abstract models for data and execution that can be
+    applied to a variety of algorithms across many different processor
+    architectures.
+  license: BSD-3-Clause
+  license_file:
+    - LICENSE.txt
+    - vtkm/thirdparty/diy/vtkmdiy/LICENSE.txt
+    - vtkm/thirdparty/lcl/vtkmlcl/LICENSE.md
+    - vtkm/thirdparty/lodepng/vtkmlodepng/LICENSE
+  homepage: https://m.vtk.org/
+  repository: https://gitlab.kitware.com/vtk/vtk-m
+  documentation: https://docs-m.vtk.org/latest/
+
+extra:
+  recipe-maintainers:
+    - danielnachun
+    - vicentebolea
