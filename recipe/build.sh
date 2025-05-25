@@ -21,6 +21,9 @@ cmake -GNinja -S ${SRC_DIR} -B build \
 cmake --build build -j${CPU_COUNT}
 cmake --install build
 
-VTKm_DIR=$PREFIX cmake -GNinja -S ${SRC_DIR}/examples/smoke_test/ -B smoke_test_build
-cmake --build smoke_test_build
-./smoke_test_build/smoke_test
+# Smoke test can only be run when we are *not* cross-compiling.
+if [[ ${CONDA_BUILD_CROSS_COMPILATION:-0} == 0 ]]; then
+    VTKm_DIR=$PREFIX cmake -GNinja -S ${SRC_DIR}/examples/smoke_test/ -B smoke_test_build
+    cmake --build smoke_test_build
+    ./smoke_test_build/smoke_test
+fi
