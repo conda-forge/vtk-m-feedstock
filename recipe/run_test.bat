@@ -36,7 +36,7 @@ if not exist %LIBRARY_PREFIX%\include\vtkm-%so_version% exit 1
 goto :eof
 
 :check_lib
-lib_name=%~1
+set lib_name=%~1
 if not exist %LIBRARY_PREFIX%\bin\libvtkm_%lib_name%-%so_version%.dll exit 1
 if not exist %LIBRARY_PREFIX%\lib\libvtkm_%lib_name%-%so_version%.lib exit 1
 goto :eof
