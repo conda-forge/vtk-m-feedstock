@@ -1,3 +1,7 @@
+azure:
+  free_disk_space: true
+  settings_linux:
+    swapfile_size: 16GiB
 bot:
   automerge: true
 build_platform:

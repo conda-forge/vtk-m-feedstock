@@ -1,7 +1,9 @@
 @echo on
 @setlocal EnableDelayedExpansion
 
-for /F "tokens=1,2 delims=. " %%a in ("%PKG_VERSION%") do ( set so_version=%%a.%%b )
+for /F "tokens=1,2 delims=. " %%a in ("%PKG_VERSION%") do (
+    set so_version=%%a.%%b
+)
 
 set vtkm_modules=^
     cont^
