@@ -3,9 +3,9 @@
 set -o xtrace -o nounset -o pipefail -o errexit
 
 if [[ ${cuda_compiler_version:=None} != "None" ]]; then
-    export EXTRA_CMAKE_FLAGS="-DCMAKE_CUDA_SEPARABLE_COMPILATION=ON -DVTKm_ENABLE_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES='70-real;86-virtual'"
+    export CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_CUDA_SEPARABLE_COMPILATION=ON -DVTKm_ENABLE_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES='70-real;86-virtual'"
 else
-    export EXTRA_CMAKE_FLAGS="-DVTKm_ENABLE_CUDA=OFF"
+    export CMAKE_ARGS="${CMAKE_ARGS} -DVTKm_ENABLE_CUDA=OFF"
 fi
 
 cmake -GNinja -S ${SRC_DIR} -B build \
@@ -15,7 +15,6 @@ cmake -GNinja -S ${SRC_DIR} -B build \
     -DVTKm_ENABLE_OPENMP=ON \
     -DVTKm_ENABLE_EXAMPLES=OFF \
     -DVTKm_INSTALL_EXAMPLES=OFF \
-    ${EXTRA_CMAKE_FLAGS} \
     ${CMAKE_ARGS}
 
 cmake --build build -j${CPU_COUNT}

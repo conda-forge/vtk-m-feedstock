@@ -2,7 +2,7 @@
 @setlocal EnableDelayedExpansion
 
 if %cuda_compiler_version% NEQ None (
-    set CMAKE_ARGS=%CMAKE_ARGS% -DCMAKE_CUDA_SEPARABLE_COMPILATION=ON -DVTKm_ENABLE_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES='70-real;86-virtual'"
+    set CMAKE_ARGS=%CMAKE_ARGS% -DCMAKE_CUDA_SEPARABLE_COMPILATION=ON -DVTKm_ENABLE_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES='70-real;86-virtual' -DCMAKE_CUDA_FLAGS='-Xptxas --disable-optimizer-constants'"
 ) else (
     set CMAKE_ARGS=%CMAKE_ARGS% -DVTKm_ENABLE_CUDA=OFF
 )
