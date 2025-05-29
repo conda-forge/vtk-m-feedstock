@@ -12,6 +12,8 @@ cuda_compiler_version:
 - None
 cxx_compiler:
 - vs2019
+github_actions_labels:
+- cirun-openstack-cpu-2xlarge
 hdf5:
 - 1.14.6
 target_platform:

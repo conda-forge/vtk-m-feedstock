@@ -1,3 +1,5 @@
 cuda_compiler_version:
   - None
   - 11.8  # [linux64]
+github_actions_labels:
+- cirun-openstack-cpu-2xlarge
