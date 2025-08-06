@@ -70,7 +70,7 @@ requirements:
     - {{ compiler('cuda') }}  # [cuda_compiler_version != "None"]
     - cmake >=3.23
     - gnuconfig
-    - libgomp      # [linux]
+    - libgomp  # [linux]
     - llvm-openmp  # [osx]
     - ninja
     - pkg-config

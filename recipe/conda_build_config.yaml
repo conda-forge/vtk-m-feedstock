@@ -1,5 +1,12 @@
-cuda_compiler_version:
-  - None
-  - 11.8  # [linux64]
 github_actions_labels:
-- cirun-openstack-cpu-2xlarge
+  - cirun-openstack-cpu-2xlarge
+
+cuda_compiler_version:  # [linux]
+  - None
+  - 12.4  # [os.environ.get("CF_CUDA_ENABLED", "False") == "True"]
+c_compiler_version:  # [linux]
+  - 14
+  - 12  # [os.environ.get("CF_CUDA_ENABLED", "False") == "True"]
+cxx_compiler_version:  # [linux]
+  - 14
+  - 12  # [os.environ.get("CF_CUDA_ENABLED", "False") == "True"]
