@@ -1,7 +1,7 @@
 {% set platform_dependent_flags = " -DVTKm_ENABLE_OPENMP=ON" %}  # [unix]
 {% set name = "vtk-m" %}
 {% set version = "2.3.0" %}
-{% set build = 1 %}
+{% set build = 2 %}
 {% set sha256 = "63f1a0273227463a1be38c046630ea6f606ed958543fe6ff64eb6bb6513a6013" %}
 {% set soversion = version.split('.')[0] + "." + version.split('.')[1] %}
 {% set platform_dependent_flags = "" %}
@@ -70,7 +70,7 @@ requirements:
     - {{ compiler('cuda') }}  # [cuda_compiler_version != "None"]
     - cmake >=3.23
     - gnuconfig
-    - libgomp      # [linux]
+    - libgomp  # [linux]
     - llvm-openmp  # [osx]
     - ninja
     - pkg-config
